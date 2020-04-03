@@ -20,24 +20,24 @@ public class MainCircles extends JFrame {
         });
     }
 
-    private MainCircles() {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setBounds(POS_X, POS_Y, WINDOW_WIDTH, WINDOW_HEIGHT);
-        GameCanvas canvas = new GameCanvas(this);
-        add(canvas, BorderLayout.CENTER);
-        setTitle("Circles");
-        initApplication();
-        setVisible(true);
+    private MainCircles() {     // конструктор главного окна
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); //...
+        setBounds(POS_X, POS_Y, WINDOW_WIDTH, WINDOW_HEIGHT); //...
+        GameCanvas canvas = new GameCanvas(this);   // присвоение переменной ссылки на объект ссылающийся на конструктор который его вызывает
+        add(canvas, BorderLayout.CENTER);   //добавление на окно канвы с размещением в центре
+        setTitle("Circles"); //...
+        initApplication(); //заполняем массив объектов
+        setVisible(true); //...
     }
 
-    private void initApplication() {
+    private void initApplication() {       // заполнения массива объектов
         for (int i = 0; i < sprites.length; i++) {
             sprites[i] = new Ball();
         }
     }
 
-    void onCanvasRepainted(GameCanvas canvas, Graphics g, float deltaTime) {
-        update(canvas, deltaTime);
+    void onCanvasRepainted(GameCanvas canvas, Graphics g, float delta) {
+        update(canvas, delta);
         render(canvas, g);
     }
 

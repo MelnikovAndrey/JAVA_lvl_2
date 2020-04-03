@@ -1,8 +1,6 @@
 package lesson1;
 
 public class Main {
-    // primitives are in stack
-    // objects are in heap
 
     private static abstract class Animal {
         int age;
