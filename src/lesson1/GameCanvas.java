@@ -2,6 +2,9 @@ package lesson1;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 
 public class GameCanvas extends JPanel {
 
@@ -19,19 +22,27 @@ public class GameCanvas extends JPanel {
         //60 frames per second
         long currentTime = System.nanoTime(); // считывание и запись машинного времени
         float deltaTime = (currentTime - lastFrameTime) * 0.000000001f; //...
-        lastFrameTime = currentTime;    //...
+        lastFrameTime = currentTime;
         listener.onCanvasRepainted(this, g, deltaTime);
-        try {
-            Thread.sleep(17);
-        } catch (InterruptedException e) { //обработка искл. прерывания потока другим потоком
-            e.printStackTrace();
-        }
+
         repaint();
     }
-        // определение границ канвы
-    public int getLeft() { return 0; }
-    public int getRight() { return getWidth() - 1; }
-    public int getTop() { return 0; }
-    public int getBottom() { return getHeight() - 1; }
+
+    // получение границ канвы
+    public int getLeft() {
+        return 0;
+    }
+
+    public int getRight() {
+        return getWidth() - 1;
+    }
+
+    public int getTop() {
+        return 0;
+    }
+
+    public int getBottom() {
+        return getHeight() - 1;
+    }
 
 }
