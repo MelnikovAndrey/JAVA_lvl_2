@@ -1,20 +1,28 @@
 package lesson3;
 
-public class Person {
-    private String phone;
-    private String mail;
+import java.util.HashSet;
 
-    public Person(String phone, String mail) {
+public class Person {
+
+    private HashSet<String> phone;
+    private HashSet<String> mail;
+
+
+    public Person(HashSet<String> phone, HashSet<String> mail) {
         this.phone = phone;
         this.mail = mail;
     }
 
-    public String getPhone() {
+    public HashSet<String> getPhone() {
         return phone;
     }
 
-    public String getMail() {
+    public HashSet<String> getMail() {
         return mail;
     }
 
+    @Override
+    public String toString() {
+         return "Фамилия " +  + " номера " + phone + " почта " + mail;
+    }
 }

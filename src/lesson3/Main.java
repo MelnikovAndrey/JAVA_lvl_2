@@ -28,6 +28,8 @@ public class Main {
         phoneBook.addContact("Венера", "7777777","Венера@");
 
         phoneBook.lookingForPhone("Заргала");
+        System.out.println();
+        phoneBook.lookingForMail("Рошкар");
 
 //        System.out.println(phoneBook);
     }
