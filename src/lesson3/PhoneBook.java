@@ -2,35 +2,46 @@ package lesson3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class PhoneBook {
 
-    HashMap<String, List<Person>> hm;
+    private final HashMap<String, List<Person>> hm;
 
     public PhoneBook() {
         this.hm = new HashMap<>();
     }
 
     public void addContact(String surname, String phone, String mail) {
-        HashSet<String> ph = new HashSet<>();
-//        HashSet<String> ph = hm.getOrDefault(surname, new HashSet<List<Person>>()) ;
-        ph.add(phone);
-        HashSet<String> ml = new HashSet<>();
-        ml.add(mail);
-        List<Person> people = new ArrayList<>();
-        people.add(new Person(ph, ml));
-        hm.put(surname, people);
+        if(hm.containsKey(surname)) {
+            List<Person> people = hm.get(surname);
+            people.add(new Person(phone, mail));
+            } else{
+            List<Person> people = new ArrayList<>();
+            people.add(new Person(phone, mail));
+            hm.put(surname, people);
+        }
     }
 
     public void lookingForPhone(String surname) {
+//        if(!hm.containsKey(surname)) return null;
         List<Person> person = hm.get(surname);
-        System.out.println("Фамилия " + surname + " номера - " + person);
+        ArrayList<String> result = new ArrayList<>();
+        for (int i = 0; i < person.size(); i++) {
+            result.add(person.get(i).phone);
+        }
+//        } return result;
+        System.out.println("Фамилия " + surname + " телефоны - " + result);
     }
 
-    public void lookingForMail(String surname) {
+    public void  lookingForMail(String surname) {
+//        if(!hm.containsKey(surname)) return null;
         List<Person> person = hm.get(surname);
-        System.out.println("Фамилия " + surname + " почта - " + person);
+        ArrayList<String> result = new ArrayList<>();
+        for (int i = 0; i < person.size(); i++) {
+            result.add(person.get(i).mail);
+        }
+//        } return result;
+        System.out.println("Фамилия " + surname + " почта - " + result);
     }
 }

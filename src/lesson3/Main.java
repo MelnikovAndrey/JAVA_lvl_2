@@ -49,17 +49,14 @@ public class Main {
             for (String string : strings) {
                 if (hm.containsKey(string)) {
                     int count = hm.get(string);
-                    hm.put(string, ++count);
+                    hm.put(string, hm.get(string) + 1);
                 } else {
                     hm.put(string, 1);
                 }
             }
             Set<String> set = hm.keySet();
-                for (String s: set
-                     ) {
+                for (String s: set) {
                     System.out.println(s + ", кол-во копий = "+ hm.get(s));
                 }
         }
-
-
     }
