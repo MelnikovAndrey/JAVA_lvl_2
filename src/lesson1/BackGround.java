@@ -17,11 +17,6 @@ public class BackGround extends GameCanvas{
                 (int)(Math.random() * 255)
         );
         setBackground(color);
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) { //обработка искл. прерывания потока другим потоком
-//            e.printStackTrace();
-//        }
         repaint();
     }
 }
