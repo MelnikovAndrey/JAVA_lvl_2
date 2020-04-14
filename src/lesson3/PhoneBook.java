@@ -3,6 +3,7 @@ package lesson3;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PhoneBook {
 
@@ -43,5 +44,13 @@ public class PhoneBook {
         }
 //        } return result;
         System.out.println("Фамилия " + surname + " почта - " + result);
+    }
+//    Какой-то сложный вариант решения метода!!!
+
+    public ArrayList<String> getMails(String name) {
+        if (!hm.containsKey(name)) return null;
+
+        return hm.get(name).stream().map(person -> person.mail)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
