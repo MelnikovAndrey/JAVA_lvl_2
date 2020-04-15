@@ -2,10 +2,13 @@ package lesson4;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
-public class ClientGUI extends JFrame implements ActionListener, Thread.UncaughtExceptionHandler {
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
+public class ClientGUI extends JFrame implements ActionListener, FocusListener, Thread.UncaughtExceptionHandler {
 
     private static final int WIDTH = 400;
     private static final int HEIGHT = 300;
@@ -21,8 +24,10 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
 
     private final JPanel panelBottom = new JPanel(new BorderLayout());
     private final JButton btnDisconnect = new JButton("<html><b>Disconnect</b></html>");
-    private final JTextField tfMessage = new JTextField();
+    private final JTextField tfMessage = new JTextField("Введите текст Вашего сообщения ...");
     private final JButton btnSend = new JButton("Send");
+
+
 
     private final JList<String> userList = new JList<>();
 
@@ -33,6 +38,7 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
                 new ClientGUI();
             }
         });
+
     }
 
     ClientGUI() {
@@ -60,23 +66,17 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         panelTop.add(btnLogin);
         panelBottom.add(btnDisconnect, BorderLayout.WEST);
         panelBottom.add(tfMessage, BorderLayout.CENTER);
+
+        tfMessage.addFocusListener(this);
+        tfMessage.addActionListener(this);
         panelBottom.add(btnSend, BorderLayout.EAST);
+        btnSend.addActionListener(this);
 
         add(scrUser, BorderLayout.EAST);
         add(scrLog, BorderLayout.CENTER);
         add(panelTop, BorderLayout.NORTH);
         add(panelBottom, BorderLayout.SOUTH);
         setVisible(true);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object src = e.getSource();
-        if (src == cbAlwaysOnTop) {
-            setAlwaysOnTop(cbAlwaysOnTop.isSelected());
-        } else {
-            throw new RuntimeException("Unknown source:" + src);
-        }
     }
 
     @Override
@@ -88,5 +88,44 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
                 t.getName(), e.getClass().getCanonicalName(), e.getMessage(), ste[0]);
         JOptionPane.showMessageDialog(this, msg, "Exception", JOptionPane.ERROR_MESSAGE);
         System.exit(1);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object src = e.getSource();
+        if (src == cbAlwaysOnTop) {
+            setAlwaysOnTop(cbAlwaysOnTop.isSelected());
+        } else {
+            printMessage();
+            logWriter(log.getText());
+        }
+    }
+
+    private void printMessage() {
+        log.append(tfLogin.getText() + ": " + tfMessage.getText() + "\n");
+        tfMessage.setText("");
+    }
+
+    @Override
+    public void focusGained(FocusEvent e) {
+        tfMessage.setText("");
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+
+    }
+
+    public static void logWriter(String text){
+        try(FileOutputStream fos=new FileOutputStream("D:\\5. JAVA\\JAVA_lvl_2\\111\\logchat.txt");
+            PrintStream printStream = new PrintStream(fos))
+        {
+            printStream.println(text);
+            System.out.println("Запись в файл произведена");
+        }
+        catch(IOException ex){
+
+            System.out.println(ex.getMessage());
+        }
     }
 }
