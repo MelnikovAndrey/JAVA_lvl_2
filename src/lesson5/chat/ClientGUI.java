@@ -1,14 +1,13 @@
-package lesson4;
+package lesson5.chat;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-
-import java.io.FileOutputStream;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 
-public class ClientGUI extends JFrame implements ActionListener, FocusListener, Thread.UncaughtExceptionHandler {
+public class ClientGUI extends JFrame implements ActionListener, Thread.UncaughtExceptionHandler {
 
     private static final int WIDTH = 400;
     private static final int HEIGHT = 300;
@@ -24,12 +23,11 @@ public class ClientGUI extends JFrame implements ActionListener, FocusListener, 
 
     private final JPanel panelBottom = new JPanel(new BorderLayout());
     private final JButton btnDisconnect = new JButton("<html><b>Disconnect</b></html>");
-    private final JTextField tfMessage = new JTextField("Введите текст Вашего сообщения ...");
+    private final JTextField tfMessage = new JTextField();
     private final JButton btnSend = new JButton("Send");
 
-
-
     private final JList<String> userList = new JList<>();
+    private boolean shownIoErrors = false;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -38,7 +36,6 @@ public class ClientGUI extends JFrame implements ActionListener, FocusListener, 
                 new ClientGUI();
             }
         });
-
     }
 
     ClientGUI() {
@@ -49,7 +46,7 @@ public class ClientGUI extends JFrame implements ActionListener, FocusListener, 
         setAlwaysOnTop(true);
         userList.setListData(new String[]{"user1", "user2", "user3", "user4",
                 "user5", "user6", "user7", "user8", "user9",
-                "user-with-exceptionally-long-name-in-this-lesson5.chat"});
+                "user-with-exceptionally-long-name-in-this-chat"});
         JScrollPane scrUser = new JScrollPane(userList);
         JScrollPane scrLog = new JScrollPane(log);
         scrUser.setPreferredSize(new Dimension(100, 0));
@@ -57,6 +54,9 @@ public class ClientGUI extends JFrame implements ActionListener, FocusListener, 
         log.setWrapStyleWord(true);
         log.setEditable(false);
         cbAlwaysOnTop.addActionListener(this);
+        tfMessage.addActionListener(this);
+        btnSend.addActionListener(this);
+        btnLogin.addActionListener(this);
 
         panelTop.add(tfIPAddress);
         panelTop.add(tfPort);
@@ -66,11 +66,7 @@ public class ClientGUI extends JFrame implements ActionListener, FocusListener, 
         panelTop.add(btnLogin);
         panelBottom.add(btnDisconnect, BorderLayout.WEST);
         panelBottom.add(tfMessage, BorderLayout.CENTER);
-
-        tfMessage.addFocusListener(this);
-        tfMessage.addActionListener(this);
         panelBottom.add(btnSend, BorderLayout.EAST);
-        btnSend.addActionListener(this);
 
         add(scrUser, BorderLayout.EAST);
         add(scrLog, BorderLayout.CENTER);
@@ -80,51 +76,71 @@ public class ClientGUI extends JFrame implements ActionListener, FocusListener, 
     }
 
     @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        e.printStackTrace();
-        String msg;
-        StackTraceElement[] ste = e.getStackTrace();
-        msg = String.format("Exception in \"%s\" %s: %s\n\tat %s",
-                t.getName(), e.getClass().getCanonicalName(), e.getMessage(), ste[0]);
-        JOptionPane.showMessageDialog(this, msg, "Exception", JOptionPane.ERROR_MESSAGE);
-        System.exit(1);
-    }
-
-    @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
         if (src == cbAlwaysOnTop) {
             setAlwaysOnTop(cbAlwaysOnTop.isSelected());
+        } else if (src == btnSend || src == tfMessage) {
+            sendMessage();
+        } else if (src == btnLogin) {
+            for (long i = 0; i < 10_000_000_000L; i++) {
+                long a = i * 432;
+            }
+        } else {
+            throw new RuntimeException("Unknown source:" + src);
         }
-            printMessage();
-            logWriter(log.getText());
     }
 
-    private void printMessage() {
-        log.append(tfLogin.getText() + ": " + tfMessage.getText() + "\n");
-        tfMessage.setText("");
+    private void sendMessage() {
+        String msg = tfMessage.getText();
+        String username = tfLogin.getText();
+        if ("".equals(msg)) return;
+        tfMessage.setText(null);
+        tfMessage.requestFocusInWindow();
+        putLog(String.format("%s: %s", username, msg));
+        //wrtMsgToLogFile(msg, username);
+    }
+
+    private void wrtMsgToLogFile(String msg, String username) {
+        try (FileWriter out = new FileWriter("log.txt", true)) {
+            out.write(username + ": " + msg + System.lineSeparator());
+            out.flush();
+        } catch (IOException e) {
+            if (!shownIoErrors) {
+                shownIoErrors = true;
+                showException(Thread.currentThread(), e);
+            }
+        }
+    }
+
+    private void putLog(String msg) {
+        if ("".equals(msg)) return;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                log.append(msg + System.lineSeparator());
+                log.setCaretPosition(log.getDocument().getLength());
+            }
+        });
+    }
+
+    private void showException(Thread t, Throwable e) {
+        String msg;
+        StackTraceElement[] ste = e.getStackTrace();
+        if (ste.length == 0)
+            msg = "Empty Stacktrace";
+        else {
+            msg = String.format("Exception in \"%s\" %s: %s\n\tat %s",
+                    t.getName(), e.getClass().getCanonicalName(), e.getMessage(), ste[0]);
+            JOptionPane.showMessageDialog(this, msg, "Exception", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
-    public void focusGained(FocusEvent e) {
-        tfMessage.setText("");
-    }
-
-    @Override
-    public void focusLost(FocusEvent e) {
-
-    }
-
-    public static void logWriter(String text){
-        try(FileOutputStream fos=new FileOutputStream("D:\\5. JAVA\\JAVA_lvl_2\\111\\logchat.txt");
-            PrintStream printStream = new PrintStream(fos))
-        {
-            printStream.println(text);
-            System.out.println("Запись в файл произведена");
-        }
-        catch(IOException ex){
-
-            System.out.println(ex.getMessage());
-        }
+    public void uncaughtException(Thread t, Throwable e) {
+        e.printStackTrace();
+        showException(t, e);
+        System.exit(1);
     }
 }
+
