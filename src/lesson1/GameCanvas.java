@@ -2,9 +2,6 @@ package lesson1;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 
 public class GameCanvas extends JPanel {
 
